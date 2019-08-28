@@ -22,13 +22,15 @@ routes.put('/users', UserController.update);
 
 routes.post('/meetups', MeetupController.store);
 routes.put('/meetups/:id', MeetupController.update);
+routes.get('/meetups/:id', MeetupController.detail);
 routes.delete('/meetups/:id', MeetupController.delete);
 routes.get('/meetups', MeetupController.index);
-routes.post('/meetups/:meetupID/subscribe', SubscriptionController.store);
 
 routes.post('/files', upload.single('file'), FileController.store);
 
+routes.post('/meetups/:id/subscribe', SubscriptionController.store);
 routes.get('/subscriptions', SubscriptionController.index);
+routes.delete('/subscriptions/:id', SubscriptionController.delete);
 
 routes.get('/my-meetups', MyMeetupsController.index);
 

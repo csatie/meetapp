@@ -3,6 +3,7 @@ import { Op } from 'sequelize';
 import { isBefore, startOfDay, endOfDay, parseISO } from 'date-fns';
 import Meetup from '../models/Meetup';
 import User from '../models/User';
+import File from '../models/File';
 
 class MeetupController {
   async store(req, res) {
@@ -110,12 +111,34 @@ class MeetupController {
           model: User,
           as: 'user',
         },
+        {
+          model: File,
+          as: 'file',
+        },
       ],
       limit: 10,
       offset: 10 * page - 10,
     });
 
     return res.json(meetups);
+  }
+
+  async detail(req, res) {
+   const user_id = req.userID;
+   const meetup = await Meetup.findByPk(req.params.id, {
+      include: [{
+          model: File,
+          as: 'file',
+        },],
+    });
+
+
+   if (meetup.user_id !== user_id) {
+      return res.status(401).json({ error: 'Not authorized' });
+    }
+   
+
+    return res.json(meetup);
   }
 }
 

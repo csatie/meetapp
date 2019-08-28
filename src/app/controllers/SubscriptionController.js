@@ -2,12 +2,13 @@ import { Op } from 'sequelize';
 import Meetup from '../models/Meetup';
 import User from '../models/User';
 import Subscription from '../models/Subscription';
+import File from '../models/File';
 import Mail from '../../lib/Mail';
 
 class SubscriptionController {
   async store(req, res) {
     const user = await User.findByPk(req.userID);
-    const meetup = await Meetup.findByPk(req.params.meetupID, {
+    const meetup = await Meetup.findByPk(req.params.id, {
       include: [
         {
           model: User,
@@ -68,6 +69,21 @@ class SubscriptionController {
     return res.json(subscription);
   }
 
+  async delete(req, res) {
+    const user_id = req.userID;
+
+    const subscription = await Subscription.findByPk(req.params.id);
+
+    // confere se usuário é dono do meetup
+    if (subscription.user_id !== user_id) {
+      return res.status(401).json({ error: 'Not authorized' });
+    }
+
+    await subscription.destroy();
+
+    return res.send();
+  }
+
   async index(req, res) {
     const subscriptions = await Subscription.findAll({
       where: {
@@ -81,7 +97,16 @@ class SubscriptionController {
               [Op.gt]: new Date(),
             },
           },
-          required: true,
+          include: [
+            {
+              model: User,
+              as: 'user',
+            },
+            {
+              model: File,
+              as: 'file',
+            },
+          ],
         },
       ],
       order: [[Meetup, 'date']],
