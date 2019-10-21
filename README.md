@@ -2,7 +2,7 @@
 
 Clone this repo
 ```sh
-$ git clone https://github.com/csatie/meetapp.git && cd meetapp`
+$ git clone https://github.com/csatie/meetapp.git && cd meetapp
 ```
 
 Install the dependencies
